@@ -4,3 +4,8 @@ pub mod user;
 pub mod evolution;
 pub mod event;
 pub mod challenge;
+pub mod app;
+pub mod post;
+pub mod rayou;
+pub mod shop;
+pub mod vortex;

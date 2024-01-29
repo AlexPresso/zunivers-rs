@@ -1,4 +1,8 @@
+use std::collections::HashMap;
 use serde::Deserialize;
+use chrono::naive::serde::ts_seconds_option;
+use chrono::NaiveDateTime;
+
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -18,7 +22,8 @@ pub struct Profile {
     pub trade_count_today: u8,
     pub trade_limit: u8,
     pub upgradable_item_count: u16,
-    pub user: User
+    pub user: User,
+    pub leaderboards: Vec<Leaderboard>
 }
 
 #[derive(Debug, Deserialize)]
@@ -29,15 +34,15 @@ pub struct User {
     pub discord_global_name: String,
     pub discord_id: String,
     pub discord_avatar: String,
-    pub created_date: String,
+    #[serde(with = "ts_seconds_option")]
+    pub created_date: Option<NaiveDateTime>,
     pub is_active: bool,
     pub lore_dust: u16,
     pub lore_fragment: u16,
     pub upgrade_dust: u16,
     pub balance: u16,
     pub user_banner: Option<UserBanner>,
-    pub rank: Rank,
-    pub leaderboards: Vec<Leaderboard>
+    pub rank: Rank
 }
 
 #[derive(Debug, Deserialize)]
@@ -68,14 +73,7 @@ pub struct Rank {
 pub struct Leaderboard {
     pub position: u16,
     pub score: u16,
-    pub data: LeaderboardData,
+    pub data: Option<HashMap<String, u16>>,
     #[serde(rename = "type")]
     pub leaderboard_type: String
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct LeaderboardData {
-    pub total: u16,
-    pub total_distinct: u16
 }
