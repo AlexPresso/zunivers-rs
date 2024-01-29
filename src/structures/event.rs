@@ -1,6 +1,8 @@
+use serde::Deserialize;
 use crate::structures::card::Item;
 use crate::structures::pack::Pack;
 
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Event {
     pub id: String,
