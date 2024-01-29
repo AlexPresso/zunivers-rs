@@ -1,27 +1,26 @@
 use serde::Deserialize;
-use crate::structures::pack::Pack;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ItemDetail {
     pub back_urls: Vec<String>,
     pub item: Item,
-    pub pack: Pack,
     pub normal_recycle_metadata: Option<ItemMetadata>,
     pub golden_recycle_metadata: Option<ItemMetadata>,
     pub owned_percent: f64,
-    pub component_items: Option<Vec<Item>>
+    pub component_items: Option<Vec<Item>>,
+    pub fusion_items: Option<Vec<Item>>
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
     pub id: String,
+    pub identifier: u16,
     pub name: String,
     pub description: Option<String>,
     pub genre: String,
     pub slug: String,
-    pub identifier: u16,
     pub is_counting: bool,
     pub is_craftable: bool,
     pub is_goldable: bool,
@@ -35,10 +34,6 @@ pub struct Item {
     pub urls: Vec<String>
 }
 
-pub enum Genre {
-
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ItemMetadata {
@@ -50,4 +45,17 @@ pub struct ItemMetadata {
 pub struct Fusion {
     pub item: Item,
     pub items: Vec<Item>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InventoryEntry {
+    pub id: String,
+    pub is_fusion: bool,
+    pub is_fusion_component: bool,
+    pub is_golden: bool,
+    pub item: Item,
+    pub quantity: u16,
+    pub recycle_metadata: ItemMetadata,
+    pub upgrade_level: u8
 }
