@@ -1,16 +1,16 @@
 use std::fmt::Debug;
 use crate::structures::pack::Pack;
-use crate::structures::card::{Fusion, InventoryEntry, Item, ItemDetail};
+use crate::structures::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
 use reqwest::{Client, Error};
 use serde::de::DeserializeOwned;
 use crate::structures::app::{AppSettings, AppStatus};
-use crate::structures::challenge::{ActiveChallenge, Challenge};
+use crate::structures::challenge::ActiveChallenge;
 use crate::structures::event::Event;
 use crate::structures::post::Post;
 use crate::structures::rayou::Jackpot;
 use crate::structures::shop::ShopEntry;
 use crate::structures::user::Profile;
-use crate::structures::vortex::VortexSeason;
+use crate::structures::vortex::{Tournament, VortexSeason};
 
 
 const BASE_URL: &str = "https://zunivers-api.zerator.com";
@@ -20,11 +20,13 @@ const FUSION: &str = "/public/fusion";
 const INVENTORY: &str = "/public/inventory";
 const USER: &str = "/public/user";
 const POSTS: &str = "/public/post";
-const LUCKY: &str = "/public/lucky";
+const LUCKY: &str = "/public/lucky/jackpot";
 const SHOP: &str = "/public/shop";
-const EVENT: &str = "/public/event";
-const TOWER: &str = "/public/tower";
+const EVENT: &str = "/public/event/current";
+const TOWER: &str = "/public/tower/season";
+const TOURNAMENT: &str = "/public/tournament/latest";
 const CHALLENGE: &str = "/public/challenge";
+const RECYCLE: &str = "/public/recycle/config";
 const STATUS: &str = "/app/status";
 const SETTINGS: &str = "/app/settings";
 
@@ -70,15 +72,15 @@ pub async fn fetch_post(slug: &String) -> Result<Post, Error> {
 }
 
 pub async fn fetch_jackpot() -> Result<Jackpot, Error> {
-    request(format!("{}/{}", LUCKY, "jackpot")).await
+    request(String::from(LUCKY)).await
 }
 
 pub async fn fetch_shop() -> Result<Vec<ShopEntry>, Error> {
     request(String::from(SHOP)).await
 }
 
-pub async fn fetch_current_events() -> Result<Vec<Event>, Error> {
-    request(format!("{}/{}", EVENT, "current")).await
+pub async fn fetch_current_events() -> Result<Option<Vec<Event>>, Error> {
+    request(String::from(EVENT)).await
 }
 
 pub async fn fetch_active_challenges() -> Result<Vec<ActiveChallenge>, Error> {
@@ -86,8 +88,17 @@ pub async fn fetch_active_challenges() -> Result<Vec<ActiveChallenge>, Error> {
 }
 
 pub async fn fetch_vortex_season() -> Result<VortexSeason, Error> {
-    request(format!("{}/{}", TOWER, "season")).await
+    request(String::from(TOWER)).await
 }
+
+pub async fn fetch_vortex_tournament() -> Result<Tournament, Error> {
+    request(String::from(TOURNAMENT)).await
+}
+
+pub async fn fetch_recycle_config() -> Result<Vec<RarityMetadata>, Error> {
+    request(String::from(RECYCLE)).await
+}
+
 
 async fn request<T>(uri: String) -> Result<T, Error>
 where

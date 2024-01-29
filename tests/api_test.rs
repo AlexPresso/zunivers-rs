@@ -93,7 +93,6 @@ mod test {
         let events = fetch_current_events().await;
 
         assert!(events.is_ok());
-        assert!(events.unwrap().len() > 0);
     }
 
     #[tokio::test]
@@ -109,5 +108,19 @@ mod test {
         let vortex = fetch_vortex_season().await;
 
         assert!(vortex.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_vortex_tournament() {
+        let tournament = fetch_vortex_tournament().await;
+
+        assert!(tournament.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_recycle_config() {
+        let config = fetch_recycle_config().await;
+
+        assert!(config.is_ok());
     }
 }
