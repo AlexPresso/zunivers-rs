@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -12,6 +13,6 @@ pub struct AppStatus {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
-    pub current_event_id: String,
+    pub current_event_id: Option<String>,
     pub in_calendar_period: bool
 }

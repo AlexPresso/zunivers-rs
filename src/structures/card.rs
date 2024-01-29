@@ -59,3 +59,13 @@ pub struct InventoryEntry {
     pub recycle_metadata: ItemMetadata,
     pub upgrade_level: u8
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RarityMetadata {
+    pub id: String,
+    pub rarity: u8,
+    pub is_golden: bool,
+    pub craft_value: u16,
+    pub recycle_value: u16
+}

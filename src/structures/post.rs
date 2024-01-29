@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -8,7 +8,7 @@ pub struct Post {
     pub title: String,
     pub content: Option<String>,
     pub created_by: String,
-    pub date: DateTime<Utc>,
+    pub date: NaiveDateTime,
     pub slug: String,
     pub image_url: String
 }
