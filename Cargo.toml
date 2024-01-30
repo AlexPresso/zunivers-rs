@@ -1,5 +1,9 @@
 [package]
 name = "zunivers-rs"
+authors = "AlexPresso"
+description = "zunivers-rs is an unofficial Rust library to interface with the zunivers (https://zunivers.zerator.com/) game API."
+license = "MIT"
+keywords = [ "zunivers", "zerator", "card", "game" ]
 version = "0.1.0"
 edition = "2021"
 
