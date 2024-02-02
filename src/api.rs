@@ -1,11 +1,12 @@
-use std::fmt::Debug;
-use crate::structures::pack::Pack;
-use crate::structures::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
+use std::fmt::{Debug, Display};
 use reqwest::{Client, Error};
 use serde::de::DeserializeOwned;
+
 use crate::structures::app::{AppSettings, AppStatus};
+use crate::structures::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
 use crate::structures::challenge::ActiveChallenge;
 use crate::structures::event::Event;
+use crate::structures::pack::Pack;
 use crate::structures::post::Post;
 use crate::structures::rayou::Jackpot;
 use crate::structures::shop::ShopEntry;
@@ -14,98 +15,90 @@ use crate::structures::vortex::{Tournament, VortexSeason};
 
 
 const BASE_URL: &str = "https://zunivers-api.zerator.com";
-const PACK: &str = "/public/pack";
-const ITEMS: &str = "/public/item";
-const FUSION: &str = "/public/fusion";
-const INVENTORY: &str = "/public/inventory";
-const USER: &str = "/public/user";
-const POSTS: &str = "/public/post";
-const LUCKY: &str = "/public/lucky/jackpot";
-const SHOP: &str = "/public/shop";
-const EVENT: &str = "/public/event/current";
-const TOWER: &str = "/public/tower/season";
-const TOURNAMENT: &str = "/public/tournament/latest";
-const CHALLENGE: &str = "/public/challenge";
-const RECYCLE: &str = "/public/recycle/config";
-const STATUS: &str = "/app/status";
-const SETTINGS: &str = "/app/settings";
 
 
-pub async fn fetch_packs() -> Result<Vec<Pack>, Error> {
-    request(String::from(PACK)).await
-}
+macro_rules! define_endpoint {
+    (st = $structure:ty, url = $url:literal) => {
+        define_endpoint!(st = $structure, url = $url, slug = false, fetch => Self, fetch_with_params => Self);
+    };
+    (st = $structure:ty, url = $url:literal, slug = true) => {
+        define_endpoint!(st = $structure, url = $url, slug = true, fetch => Self, fetch_with_params => Self);
+    };
 
-pub async fn fetch_items() -> Result<Vec<Item>, Error> {
-    request(String::from(ITEMS)).await
-}
+    (
+        st      =   $structure:ty,
+        url     =   $url:literal,
+        slug    =   false,
+        $fn_name:ident => $return_type:ty,
+        $fn_p_name:ident => $return_p_type:ty
+    ) => {
+        impl $structure {
+            pub async fn $fn_name() -> Result<$return_type, Error> {
+                request($url, &[]).await
+            }
 
-pub async fn fetch_item(slug: &String) -> Result<ItemDetail, Error> {
-    request(format!("{}/{}", ITEMS, slug)).await
-}
+            pub async fn $fn_p_name(params: &[(String, String)]) -> Result<$return_p_type, Error>
+            {
+                request($url, params).await
+            }
+        }
+    };
 
-pub async fn fetch_fusions() -> Result<Vec<Fusion>, Error> {
-    request(String::from(FUSION)).await
-}
+    (
+        st      =   $structure:ty,
+        url     =   $url:literal,
+        slug    =   true,
+        $fn_name:ident => $return_type:ty,
+        $fn_p_name:ident => $return_p_type:ty
+    ) => {
+        impl $structure {
+            pub async fn $fn_name<S>(slug: S) -> Result<$return_type, Error>
+                where S: Into<String> + Display
+            {
+                request(format!("{}/{}", $url, slug), &[]).await
+            }
 
-pub async fn fetch_inventory(username: &String) -> Result<Vec<InventoryEntry>, Error> {
-    request(format!("{}/{}", INVENTORY, username)).await
-}
-
-pub async fn fetch_user_profile(username: &String) -> Result<Profile, Error> {
-    request(format!("{}/{}", USER, username)).await
-}
-
-pub async fn fetch_app_status() -> Result<AppStatus, Error> {
-    request(String::from(STATUS)).await
-}
-
-pub async fn fetch_app_settings() -> Result<AppSettings, Error> {
-    request(String::from(SETTINGS)).await
-}
-
-pub async fn fetch_posts() -> Result<Vec<Post>, Error> {
-    request(String::from(POSTS)).await
-}
-
-pub async fn fetch_post(slug: &String) -> Result<Post, Error> {
-    request(format!("{}/{}", POSTS, slug)).await
-}
-
-pub async fn fetch_jackpot() -> Result<Jackpot, Error> {
-    request(String::from(LUCKY)).await
-}
-
-pub async fn fetch_shop() -> Result<Vec<ShopEntry>, Error> {
-    request(String::from(SHOP)).await
-}
-
-pub async fn fetch_current_events() -> Result<Option<Vec<Event>>, Error> {
-    request(String::from(EVENT)).await
-}
-
-pub async fn fetch_active_challenges() -> Result<Vec<ActiveChallenge>, Error> {
-    request(String::from(CHALLENGE)).await
-}
-
-pub async fn fetch_vortex_season() -> Result<VortexSeason, Error> {
-    request(String::from(TOWER)).await
-}
-
-pub async fn fetch_vortex_tournament() -> Result<Tournament, Error> {
-    request(String::from(TOURNAMENT)).await
-}
-
-pub async fn fetch_recycle_config() -> Result<Vec<RarityMetadata>, Error> {
-    request(String::from(RECYCLE)).await
+            pub async fn $fn_p_name<S>(slug: S, params: &[(String, String)]) -> Result<$return_p_type, Error>
+                where S: Into<String> + Display
+            {
+                request(format!("{}/{}", $url, slug), params).await
+            }
+        }
+    }
 }
 
 
-async fn request<T>(uri: String) -> Result<T, Error>
-where
-    T: DeserializeOwned + Debug
+define_endpoint!(st = Item, url = "/public/item", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+define_endpoint!(st = ItemDetail, url = "/public/item", slug = true);
+define_endpoint!(st = Pack, url = "/public/pack", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+define_endpoint!(st = Fusion, url = "/public/fusion", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+define_endpoint!(st = RarityMetadata, url = "/public/recycle/config", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+
+define_endpoint!(st = Profile, url = "/public/user", slug = true);
+define_endpoint!(st = InventoryEntry, url = "/public/inventory", slug = true, fetch_for => Vec<Self>, fetch_for_params => Vec<Self>);
+
+define_endpoint!(st = AppStatus, url = "/app/status");
+define_endpoint!(st = AppSettings, url = "/app/settings");
+
+define_endpoint!(st = Post, url = "/public/post", slug = true);
+define_endpoint!(st = Post, url = "/public/post", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+
+define_endpoint!(st = Jackpot, url = "/public/lucky/jackpot");
+define_endpoint!(st = ShopEntry, url = "/public/shop", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+define_endpoint!(st = Event, url = "/public/event/current", slug = false, fetch_current => Vec<Self>, fetch_current_params => Vec<Self>);
+define_endpoint!(st = ActiveChallenge, url = "/public/challenge", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+define_endpoint!(st = VortexSeason, url = "/public/tower/season");
+define_endpoint!(st = Tournament, url = "/public/tournament/latest");
+
+
+async fn request<T, S>(uri: S, params: &[(String, String)]) -> Result<T, Error>
+    where
+        T: DeserializeOwned + Debug,
+        S: Into<String> + Display
 {
     let result = Client::new()
         .get(format!("{}{}", BASE_URL, uri))
+        .query(params)
         .send()
         .await?
         .json::<T>()

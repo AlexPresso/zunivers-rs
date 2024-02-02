@@ -4,7 +4,7 @@ authors = [ "AlexPresso" ]
 description = "zunivers-rs is an unofficial Rust library to interface with the zunivers (https://zunivers.zerator.com/) game API."
 license = "MIT"
 keywords = [ "zunivers", "zerator", "card", "game" ]
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
