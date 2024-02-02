@@ -8,6 +8,6 @@
 
 ### Usage
 - Add dependency : `cargo add zunivers-rs`
-- See [docs](https://docs.rs/zunivers-rs/1.0.0/zunivers_rs/) or [api_test.rs](https://github.com/AlexPresso/zunivers-rs/blob/main/tests/api_test.rs) for examples.
+- See [docs](https://docs.rs/zunivers-rs/latest/zunivers_rs/) or [api_test.rs](https://github.com/AlexPresso/zunivers-rs/blob/main/tests/api_test.rs) for examples.
 
 ---

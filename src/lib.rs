@@ -1,2 +1,3 @@
 pub mod structures;
-pub mod api;
+
+mod api;
