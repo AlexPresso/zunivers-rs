@@ -1,3 +1,3 @@
-pub mod structures;
+pub mod model;
 
 mod api;

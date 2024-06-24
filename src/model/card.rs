@@ -56,7 +56,7 @@ pub struct InventoryEntry {
     pub is_golden: bool,
     pub item: Item,
     pub quantity: u16,
-    pub recycle_metadata: ItemMetadata,
+    pub recycle_metadata: Option<ItemMetadata>,
     pub upgrade_level: u8
 }
 

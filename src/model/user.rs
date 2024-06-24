@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use serde::Deserialize;
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
 
 
 #[derive(Debug, Deserialize)]
@@ -44,10 +44,9 @@ pub struct User {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct UserBanner {
-    pub date: String,
-    pub id: String,
+    pub id: Option<String>,
+    pub date: Option<NaiveDateTime>,
     pub banner: Banner
 }
 
@@ -61,7 +60,6 @@ pub struct Banner {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Rank {
     pub id: String,
     pub name: String
@@ -75,3 +73,16 @@ pub struct Leaderboard {
     #[serde(rename = "type")]
     pub leaderboard_type: String
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserLoot {
+    pub loot_infos: Vec<LootInfo>
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LootInfo {
+    pub count: u32,
+    pub date: NaiveDate
+}
+
