@@ -1,6 +1,6 @@
 use serde::Deserialize;
-use crate::structures::card::Item;
-use crate::structures::pack::Pack;
+use crate::model::card::Item;
+use crate::model::pack::Pack;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]

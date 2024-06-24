@@ -1,7 +1,8 @@
 use chrono::{NaiveDate, NaiveDateTime};
 use serde::Deserialize;
-use crate::structures::pack::Pack;
-use crate::structures::user::User;
+
+use crate::model::pack::Pack;
+use crate::model::user::User;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -54,6 +55,7 @@ pub struct DropRate {
 pub struct Tournament {
     pub id: String,
     pub is_done: bool,
+    pub date: NaiveDateTime,
     pub next_round_date: Option<NaiveDateTime>,
     pub round_count: u16,
     pub round_index: u16,
@@ -66,7 +68,7 @@ pub struct Battle {
     pub id: String,
     pub index: u16,
     pub round_index: u16,
-    pub outcome: bool,
+    pub outcome: Option<bool>,
     pub participant1: BattlePlayer,
     pub participant2: Option<BattlePlayer>
 }

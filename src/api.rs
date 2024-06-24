@@ -2,16 +2,16 @@ use std::fmt::{Debug, Display};
 use reqwest::{Client, Error};
 use serde::de::DeserializeOwned;
 
-use crate::structures::app::{AppSettings, AppStatus};
-use crate::structures::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
-use crate::structures::challenge::ActiveChallenge;
-use crate::structures::event::Event;
-use crate::structures::pack::Pack;
-use crate::structures::post::Post;
-use crate::structures::rayou::Jackpot;
-use crate::structures::shop::ShopEntry;
-use crate::structures::user::Profile;
-use crate::structures::vortex::{Tournament, VortexSeason};
+use crate::model::app::{AppSettings, AppStatus};
+use crate::model::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
+use crate::model::challenge::ActiveChallenge;
+use crate::model::event::Event;
+use crate::model::pack::Pack;
+use crate::model::post::Post;
+use crate::model::rayou::Jackpot;
+use crate::model::shop::ShopEntry;
+use crate::model::user::{Profile, UserBanner, UserLoot};
+use crate::model::vortex::{Tournament, VortexSeason};
 
 
 const BASE_URL: &str = "https://zunivers-api.zerator.com";
@@ -37,8 +37,7 @@ macro_rules! define_endpoint {
                 request($url, &[]).await
             }
 
-            pub async fn $fn_p_name(params: &[(String, String)]) -> Result<$return_p_type, Error>
-            {
+            pub async fn $fn_p_name(params: &[(String, String)]) -> Result<$return_p_type, Error> {
                 request($url, params).await
             }
         }
@@ -75,7 +74,9 @@ define_endpoint!(st = Fusion, url = "/public/fusion", slug = false, fetch_all =>
 define_endpoint!(st = RarityMetadata, url = "/public/recycle/config", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
 
 define_endpoint!(st = Profile, url = "/public/user", slug = true);
+define_endpoint!(st = UserLoot, url = "/public/loot", slug = true, fetch_for => Self, fetch_for_params => Self);
 define_endpoint!(st = InventoryEntry, url = "/public/inventory", slug = true, fetch_for => Vec<Self>, fetch_for_params => Vec<Self>);
+define_endpoint!(st = UserBanner, url = "/public/banner", slug = true, fetch_for => Vec<Self>, fetch_for_params => Vec<Self>);
 
 define_endpoint!(st = AppStatus, url = "/app/status");
 define_endpoint!(st = AppSettings, url = "/app/settings");
@@ -87,6 +88,7 @@ define_endpoint!(st = Jackpot, url = "/public/lucky/jackpot");
 define_endpoint!(st = ShopEntry, url = "/public/shop", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
 define_endpoint!(st = Event, url = "/public/event/current", slug = false, fetch_current => Vec<Self>, fetch_current_params => Vec<Self>);
 define_endpoint!(st = ActiveChallenge, url = "/public/challenge", slug = false, fetch_all => Vec<Self>, fetch_all_params => Vec<Self>);
+define_endpoint!(st = ActiveChallenge, url = "/public/challenge", slug = true, fetch_for => Vec<Self>, fetch_for_params => Vec<Self>);
 define_endpoint!(st = VortexSeason, url = "/public/tower/season");
 define_endpoint!(st = Tournament, url = "/public/tournament/latest");
 
@@ -96,13 +98,11 @@ async fn request<T, S>(uri: S, params: &[(String, String)]) -> Result<T, Error>
         T: DeserializeOwned + Debug,
         S: Into<String> + Display
 {
-    let result = Client::new()
+    Client::new()
         .get(format!("{}{}", BASE_URL, uri))
         .query(params)
         .send()
         .await?
         .json::<T>()
-        .await?;
-
-    Ok(result)
+        .await
 }

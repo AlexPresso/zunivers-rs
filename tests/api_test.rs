@@ -1,15 +1,15 @@
 #[cfg(test)]
 mod test {
-    use zunivers_rs::structures::app::{AppSettings, AppStatus};
-    use zunivers_rs::structures::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
-    use zunivers_rs::structures::challenge::ActiveChallenge;
-    use zunivers_rs::structures::event::Event;
-    use zunivers_rs::structures::pack::Pack;
-    use zunivers_rs::structures::post::Post;
-    use zunivers_rs::structures::rayou::Jackpot;
-    use zunivers_rs::structures::shop::ShopEntry;
-    use zunivers_rs::structures::user::Profile;
-    use zunivers_rs::structures::vortex::{Tournament, VortexSeason};
+    use zunivers_rs::model::app::{AppSettings, AppStatus};
+    use zunivers_rs::model::card::{Fusion, InventoryEntry, Item, ItemDetail, RarityMetadata};
+    use zunivers_rs::model::challenge::ActiveChallenge;
+    use zunivers_rs::model::event::Event;
+    use zunivers_rs::model::pack::Pack;
+    use zunivers_rs::model::post::Post;
+    use zunivers_rs::model::rayou::Jackpot;
+    use zunivers_rs::model::shop::ShopEntry;
+    use zunivers_rs::model::user::{Profile, UserBanner, UserLoot};
+    use zunivers_rs::model::vortex::{Tournament, VortexSeason};
 
     #[tokio::test]
     async fn test_packs() {
@@ -63,6 +63,20 @@ mod test {
     async fn test_user_profile() {
         let user = Profile::fetch(&String::from("alexpresso")).await;
         assert!(user.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_user_loot() {
+        let loot = UserLoot::fetch_for(&String::from("alexpresso")).await;
+        assert!(loot.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_user_banner() {
+        let banners = UserBanner::fetch_for(&String::from("alexpresso")).await;
+
+        assert!(banners.is_ok());
+        assert!(banners.unwrap().len() > 0)
     }
 
     #[tokio::test]
@@ -120,6 +134,14 @@ mod test {
 
         assert!(challenges.is_ok());
         assert!(challenges.unwrap().len() > 0);
+    }
+
+    #[tokio::test]
+    async fn test_user_challenges() {
+        let challenges = ActiveChallenge::fetch_for("alexpresso".to_string()).await;
+
+        assert!(challenges.is_ok());
+        assert!(challenges.unwrap().len() > 0 );
     }
 
     #[tokio::test]
